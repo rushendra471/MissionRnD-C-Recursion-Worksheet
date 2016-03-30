@@ -35,8 +35,29 @@ more parameters .
 
 #include<stdlib.h>
 
+// px and py are parent co-ordinates.
+int is_there_path(int *maze, int rows, int columns, int x1, int y1, int x2, int y2, int px, int py){
+	if (x1 < 0 || y1 < 0 || x1 >= rows || y1 >= columns || maze[(x1 * columns) + y1] == 0)
+		return 0;
+
+	if ((x1 == x2) && (y1 == y2))
+		return 1;
+
+	int up = (((x1 - 1 == px) && (y1 == py)) ? 0 : is_there_path(maze, rows, columns, x1 - 1, y1, x2, y2, x1, y1));
+	int down = (((x1 + 1 == px) && (y1 == py)) ? 0 : is_there_path(maze, rows, columns, x1 + 1, y1, x2, y2, x1, y1));
+	int left = (((x1 == px) && (y1 - 1 == py)) ? 0 : is_there_path(maze, rows, columns, x1, y1 - 1, x2, y2, x1, y1));
+	int right = (((x1 == px) && (y1 + 1 == py)) ? 0 : is_there_path(maze, rows, columns, x1, y1 + 1, x2, y2, x1, y1));
+
+	if (up || down || left || right)
+		return 1;
+	
+	return 0;
+}
 
 int path_exists(int *maze, int rows, int columns, int x1, int y1, int x2, int y2)
 {
-	return 1;
+	if (maze == NULL || rows <= 0 || columns <= 0 || (x1 < 0 && x1 >= rows) || (y1 < 0 && y1 >= columns) || (x2 < 0 && x2 >= rows) || (y2 < 0 && y2 >= columns) || maze[(x1 * columns) + y1] == 0 || maze[(x2 * columns) + y2] == 0)
+		return 0;
+
+	return is_there_path(maze, rows, columns, x1, y1, x2, y2, -1, -1);
 }

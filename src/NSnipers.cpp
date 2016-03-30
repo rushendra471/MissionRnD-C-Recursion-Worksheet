@@ -19,7 +19,7 @@ other sniper in his field of view (Control Blocks) ,he will instantly kill the o
 Your task is to help the general to place all his N Snipers on NxN field such that ,No sniper can
 kill other sniper,but still have control of all the Blocks .
 
-Input : A NxN board , which is all 0's , and N (number of snipers )
+Input : A NxN battlefield , which is all 0's , and N (number of snipers )
 Output : Return 1 if its General can place all N snipers or else return 0 .
 		 Also modify the battlefield ,such that Blocks which have sniper placed are denoted by 1
 		 and all other blocks as 0.
@@ -43,6 +43,47 @@ P.S: The Above Problem is just a modified version of a popular BackTracking prob
 */
 
 #include "stdafx.h"
-int solve_nsnipers(int *battlefield, int n){
+
+int cannot_kill(int *battlefield, int row, int col, int n)
+{
+	int i, j;
+
+	for (i = 0; i < col; i++)
+		if (battlefield[(row * n) + i])
+			return 0;
+
+	for (i = row, j = col; i >= 0 && j >= 0; i--, j--)
+		if (battlefield[(i * n) + j])
+			return 0;
+
+	for (i = row, j = col; j >= 0 && i<n; i++, j--)
+		if (battlefield[(i * n) + j])
+			return 0;
+
+	return 1;
+}
+
+int can_nsnippers_ok(int *battlefield, int n, int count){
+	if (count >= n)
+		return 1;
+
+	int i;
+	for (i = 0; i < n; i++)
+		if (cannot_kill(battlefield, i, count, n)){
+			battlefield[(i * n) + count] = 1;
+
+			if (can_nsnippers_ok(battlefield, n, count + 1))
+				return 1;
+
+			battlefield[(i * n) + count] = 0;
+		}
+
 	return 0;
+}
+
+int solve_nsnipers(int *battlefield, int n){
+	if (battlefield == NULL || n <= 3)
+		return 0;
+
+	return can_nsnippers_ok(battlefield, n , 0);
 }

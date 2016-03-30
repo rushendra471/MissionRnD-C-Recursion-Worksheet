@@ -34,7 +34,40 @@ Note : Check the function Parameters ,Its a double pointer .
 #include "stdafx.h"
 #include<stdlib.h>
 
+void update_spiral_array(int rows, int columns,int **input_array, int x, int y, int x_inc, int y_inc, int limit,int *spiral_array, int count){
+	if (count == rows * columns)
+		return;
+
+	spiral_array[count++] = input_array[x][y];
+	if ((y == columns - limit) && (x_inc == 0) && (y_inc == 1)){
+		x_inc = 1;
+		y_inc = 0;
+	}
+	else if ((x == rows - limit) && (x_inc == 1) && (y_inc == 0)){
+		x_inc = 0;
+		y_inc = -1;
+	}
+	else if ((y == limit - 1) && (x_inc == 0) && (y_inc == -1)){
+		x_inc = -1;
+		y_inc = 0;
+		limit++;
+	}
+	else if ((x == limit - 1) && (x_inc == -1) && (y_inc == 0)){
+		x_inc = 0;
+		y_inc = 1;
+	}
+	update_spiral_array(rows, columns, input_array, x + x_inc, y + y_inc, x_inc, y_inc, limit, spiral_array, count);
+
+}
+
 int *spiral(int rows, int columns, int **input_array)
 {
-	return NULL;
+	if (input_array == NULL || rows <= 0 || columns <= 0)
+		return NULL;
+
+	int *spiral_array;
+	spiral_array = (int *)malloc((rows * columns) * sizeof(int));
+
+	update_spiral_array(rows, columns, input_array, 0, 0, 0, 1, 1, spiral_array, 0);
+	return spiral_array;
 }
